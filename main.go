@@ -26,6 +26,10 @@ func main() {
 
 	http.HandleFunc("/sse", api.sseHandler)
 
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "web_sse_example.html")
+	})
+
 	// Broadcast message to all clients every 5 seconds
 	go func() {
 		count := 0

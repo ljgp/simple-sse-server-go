@@ -4,7 +4,7 @@
     <script>
         window.onload = () => {
             var messageContainer = document.getElementById("messages");
-            var sseSource = new EventSource("http://localhost:8080/sse");
+            var sseSource = new EventSource("/sse");
             sseSource.addEventListener("message", ev => {
                 console.log(ev)
                 var p = document.createElement("p");
