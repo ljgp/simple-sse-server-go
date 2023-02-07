@@ -26,7 +26,7 @@ func main() {
 
 	http.HandleFunc("/sse", api.sseHandler)
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/start", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "web_sse_example.html")
 	})
 
