@@ -27,6 +27,7 @@ func main() {
 	http.HandleFunc("/sse", api.sseHandler)
 
 	http.HandleFunc("/start", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("In de /start handlerfunc")
 		http.ServeFile(w, r, "web_sse_example.html")
 	})
 
