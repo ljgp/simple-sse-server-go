@@ -7,7 +7,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
+
+	// "strconv"
 	"time"
 
 	net "github.com/subchord/go-sse"
@@ -31,18 +32,41 @@ func main() {
 		http.ServeFile(w, r, "web_sse_example.html")
 	})
 
+	count := 0
+
+	http.HandleFunc("/msg", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("In de /msg handlerfunc")
+		switch r.Method {
+		case "POST":
+			// err := r.ParseForm()
+			// if err != nil{
+			// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+			// 	return
+			// }
+			msg := r.PostFormValue("msg")
+			count++
+			api.broker.Broadcast(net.StringEvent{
+				Id:    fmt.Sprintf("event-id-%v", count),
+				Event: "message",
+				Data:  msg,
+			})
+
+		default:
+			fmt.Fprintf(w, "Sorry, only POST method supported.")
+		}
+	})
+
 	// Broadcast message to all clients every 5 seconds
 	go func() {
-		count := 0
-		tick := time.Tick(5 * time.Second)
+		tick := time.Tick(60 * time.Second)
 		for {
 			select {
 			case <-tick:
 				count++
 				api.broker.Broadcast(net.StringEvent{
 					Id:    fmt.Sprintf("event-id-%v", count),
-					Event: "message",
-					Data:  strconv.Itoa(count),
+					Event: "ping",
+					// Data:  strconv.Itoa(count),
 				})
 			}
 		}

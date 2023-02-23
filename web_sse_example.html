@@ -5,6 +5,14 @@
         window.onload = () => {
             var messageContainer = document.getElementById("messages");
             var sseSource = new EventSource("/sse");
+            sseSource.addEventListener("ping", ev => {
+                console.log(ev)
+                var p = document.createElement("p");
+                p.innerHTML += "Event: " + ev.type + "</br>"
+                p.innerHTML += "Id: " + ev.lastEventId + "</br>"
+                p.innerHTML += "Data: " + ev.data + "</br>"
+                messageContainer.appendChild(p)
+            });
             sseSource.addEventListener("message", ev => {
                 console.log(ev)
                 var p = document.createElement("p");
@@ -12,7 +20,7 @@
                 p.innerHTML += "Id: " + ev.lastEventId + "</br>"
                 p.innerHTML += "Data: " + ev.data + "</br>"
                 messageContainer.appendChild(p)
-            })
+            });
         };
 
     </script>
