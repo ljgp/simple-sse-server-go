@@ -18,8 +18,20 @@ type API struct {
 	broker *net.Broker
 }
 
-func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+func CORS(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+	  w.Header().Add("Access-Control-Allow-Origin", "*")
+	  w.Header().Add("Access-Control-Allow-Credentials", "true")
+	  w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+	  w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+  
+	  if r.Method == "OPTIONS" {
+		  http.Error(w, "No Content", http.StatusNoContent)
+		  return
+	  }
+  
+	  next(w, r)
+	}
 }
 
 func main() {
@@ -38,9 +50,8 @@ func main() {
 
 	count := 0
 
-	http.HandleFunc("/msg", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/msg", CORS( func(w http.ResponseWriter, r *http.Request) {
 		log.Println("In de /msg handlerfunc")
-		enableCors(&w)
 
 		switch r.Method {
 		case "POST":
@@ -60,7 +71,7 @@ func main() {
 		default:
 			fmt.Fprintf(w, "Sorry, only POST method supported.")
 		}
-	})
+	}))
 
 	// Broadcast message to all clients every 5 seconds
 	go func() {
