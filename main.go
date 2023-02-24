@@ -18,6 +18,10 @@ type API struct {
 	broker *net.Broker
 }
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 func main() {
 	sseClientBroker := net.NewBroker(map[string]string{
 		"Access-Control-Allow-Origin": "*",
@@ -36,6 +40,8 @@ func main() {
 
 	http.HandleFunc("/msg", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("In de /msg handlerfunc")
+		enableCors(&w)
+
 		switch r.Method {
 		case "POST":
 			// err := r.ParseForm()
